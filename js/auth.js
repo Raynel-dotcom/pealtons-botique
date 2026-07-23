@@ -156,8 +156,45 @@ export function checkUserSession() {
       currentProfile = null;
       wishlistIds.clear();
       updateUserUI();
+    } else if (event === 'PASSWORD_RECOVERY') {
+      // Supabase sent the user back here after they clicked the email reset link.
+      // Show the "choose a new password" form instead of the normal homepage.
+      openModal('resetPasswordModal');
     }
   });
+}
+
+// ── Password Reset ───────────────────────────────────────────────────────────────────
+export async function handleResetPassword(event) {
+  event.preventDefault();
+  const supabase = getSupabase();
+  if (!supabase) {
+    showToast('Authentication system not available');
+    return;
+  }
+
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+  if (newPassword.length < 6) {
+    showToast('Password must be at least 6 characters');
+    return;
+  }
+  if (newPassword !== confirmPassword) {
+    showToast('Passwords do not match');
+    return;
+  }
+
+  try {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+
+    showToast('Password updated — you can log in with it now');
+    closeModal('resetPasswordModal');
+  } catch (error) {
+    console.error('Password update error:', error);
+    showToast(error.message || 'Could not update password');
+  }
 }
 
 // ── UI Updates ───────────────────────────────────────────────────────────────────────
@@ -313,6 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.handleAuthLogin = handleAuthLogin;
   window.handleAuthRegister = handleAuthRegister;
   window.handleAuthLogout = handleAuthLogout;
+  window.handleResetPassword = handleResetPassword;
   window.openAuthModal = openAuthModal;
   window.switchAuthTab = switchAuthTab;
   window.toggleWishlist = toggleWishlist;
