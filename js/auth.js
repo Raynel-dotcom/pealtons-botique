@@ -164,6 +164,7 @@ export function checkUserSession() {
 export function updateUserUI() {
   const authButton = document.getElementById('authButton');
   const userMenu = document.getElementById('userMenu');
+  const adminButton = document.getElementById('btnAdminDash');
 
   if (currentUser && currentProfile) {
     // User is logged in
@@ -173,10 +174,14 @@ export function updateUserUI() {
       const userName = userMenu.querySelector('.user-name');
       if (userName) userName.textContent = currentProfile.name || 'User';
     }
+    if (adminButton) {
+      adminButton.style.display = currentProfile.role === 'admin' ? 'inline-block' : 'none';
+    }
   } else {
     // User is logged out
     if (authButton) authButton.style.display = 'block';
     if (userMenu) userMenu.style.display = 'none';
+    if (adminButton) adminButton.style.display = 'none';
   }
 }
 
