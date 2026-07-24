@@ -57,6 +57,14 @@ export function closeModal(id) {
   if (el) el.classList.remove('open');
 }
 
+// ── Expose to window ──────────────────────────────────────────────────────────
+// Inline onclick="..." attributes in the HTML run in the global scope, not inside
+// this module — so anything they need to call (openModal, closeModal, showToast)
+// has to be attached to window explicitly, or the calls silently do nothing.
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.showToast = showToast;
+
 // ── Neutral placeholder SVG ───────────────────────────────────────────────────
 
 /**
