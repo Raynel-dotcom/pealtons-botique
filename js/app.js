@@ -6,11 +6,14 @@
 import { formatUGX, showToast, openModal, closeModal, NEUTRAL_PLACEHOLDER_SVG, getFallbackImage, handleImgError } from './utils.js';
 
 // ── Supabase Configuration ────────────────────────────────────────────────────────
-const SUPABASE_URL = 'https://your-project.supabase.co';
-const SUPABASE_ANON_KEY = 'your-anon-key';
+const SUPABASE_URL = 'https://kppsdkbmkncgshptnjia.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwcHNka2Jta25jZ3NocHRuamlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MzEyMTAsImV4cCI6MjEwMDIwNzIxMH0.T9m1zMqiGknvyfv7WQXUJLo5BhF5Z1xbKfemUTN9Fpw';
 
-// Initialize Supabase client (using CDN global)
+// Initialize Supabase client (using CDN global), then REPLACE window.supabase with
+// this real, configured client — auth.js / admin.js / cart.js all read window.supabase,
+// so they need the actual instance here, not the raw un-configured library.
 const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+if (supabase) window.supabase = supabase;
 
 // ── State ────────────────────────────────────────────────────────────────────────
 let allProducts = [];
