@@ -405,47 +405,9 @@
   <!-- ════════════════════════════════════
        AUTH MODAL (LOGIN / SIGNUP)
   ════════════════════════════════════ -->
-  <div class="modal-bg" id="authModal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h2>Customer Portal</h2>
-        <button class="btn-close" onclick="window.closeModal && closeModal('authModal')">✕</button>
-      </div>
-      <div class="admin-tabs">
-        <button class="tab-btn active" id="tabBtnLogin" onclick="window.switchAuthTab && switchAuthTab('login')">Sign In</button>
-        <button class="tab-btn" id="tabBtnRegister" onclick="window.switchAuthTab && switchAuthTab('register')">Register Account</button>
-      </div>
-      <div id="authMsg"></div>
-      <!-- Login Form -->
-      <form id="loginForm" onsubmit="window.handleAuthLogin && handleAuthLogin(event)">
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="loginEmail" placeholder="you@example.com" required />
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="loginPassword" placeholder="••••••••" required />
-        </div>
-        <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;">Sign In</button>
-      </form>
-      <!-- Register Form -->
-      <form id="registerForm" onsubmit="window.handleAuthRegister && handleAuthRegister(event)" style="display:none;">
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" id="regName" placeholder="e.g. John Mitooma" required />
-        </div>
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="regEmail" placeholder="you@example.com" required />
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="regPassword" placeholder="Minimum 6 characters" required />
-        </div>
-        <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;">Create Account</button>
-      </form>
-    </div>
-  </div>
+  <!-- (duplicate legacy auth modal removed — the working one lives further down,
+       right before the CUSTOMER MY ORDERS MODAL section) -->
+
 
   <!-- ════════════════════════════════════
        RESET PASSWORD MODAL
