@@ -67,8 +67,8 @@
     </div>
 
     <div class="nav-right">
-      <button class="btn-nav-outline" id="btnMyOrders" onclick="window.openMyOrdersModal && openMyOrdersModal()" style="display:none;">My Orders</button>
-      <button class="btn-nav-outline" id="btnAdminDash" onclick="window.openAdminModal && openAdminModal()" style="display:none; border-color:var(--gold-light); color:var(--gold-light);">⚙ Admin</button>
+      <!-- My Orders and Admin Dashboard moved into the "My Account" popup (click the avatar)
+           to keep the main nav from getting crowded -->
       <button class="btn-nav-outline" id="btnAuth" onclick="window.openAuthModal && openAuthModal()">Login</button>
       <!-- User Avatar Frame (shown when logged in) -->
       <div id="userAvatarBtn" onclick="window.openModal && openModal('userProfileModal')" style="display:none; cursor:pointer; width:36px; height:36px; border-radius:50%; background:var(--gold); color:var(--black); font-weight:700; font-size:14px; align-items:center; justify-content:center; border:2px solid var(--gold-light);" title="View My Account">
@@ -303,9 +303,12 @@
         <div style="font-size:13px; color:var(--gray); margin-top:4px;" id="profileEmail">user@email.com</div>
         <div style="font-size:11px; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-top:8px; font-weight:700;" id="profileRole">CUSTOMER</div>
       </div>
-      <div style="border-top:1px solid var(--border); padding-top:16px; display:flex; gap:10px;">
-        <button class="btn-nav-outline" onclick="window.openMyOrdersModal && openMyOrdersModal(); window.closeModal && closeModal('userProfileModal');" style="flex:1;">My Orders</button>
-        <button class="btn-primary" onclick="window.handleAuthLogout && handleAuthLogout(); window.closeModal && closeModal('userProfileModal');" style="flex:1; background:var(--red); color:white;">Logout</button>
+      <div style="border-top:1px solid var(--border); padding-top:16px; display:flex; flex-direction:column; gap:10px;">
+        <button id="btnAdminDashInModal" onclick="window.openAdminModal && openAdminModal(); window.closeModal && closeModal('userProfileModal');" style="display:none; width:100%; padding:12px; background:var(--gold); color:var(--black); border:none; border-radius:4px; font-weight:700; cursor:pointer;">⚙ Admin Dashboard</button>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-nav-outline" onclick="window.openMyOrdersModal && openMyOrdersModal(); window.closeModal && closeModal('userProfileModal');" style="flex:1;">My Orders</button>
+          <button class="btn-primary" onclick="window.handleAuthLogout && handleAuthLogout(); window.closeModal && closeModal('userProfileModal');" style="flex:1; background:var(--red); color:white;">Logout</button>
+        </div>
       </div>
     </div>
   </div>
