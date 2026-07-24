@@ -202,14 +202,12 @@ export function updateUserUI() {
   const btnAuth = document.getElementById('btnAuth');
   const drawerBtnAuth = document.getElementById('drawerBtnAuth');
   const userAvatarBtn = document.getElementById('userAvatarBtn');
-  const btnMyOrders = document.getElementById('btnMyOrders');
-  const adminButton = document.getElementById('btnAdminDash');
+  const adminButton = document.getElementById('btnAdminDashInModal');
 
   if (currentUser && currentProfile) {
     // User is logged in
     if (btnAuth) btnAuth.style.display = 'none';
     if (drawerBtnAuth) drawerBtnAuth.style.display = 'none';
-    if (btnMyOrders) btnMyOrders.style.display = 'inline-block';
     if (userAvatarBtn) {
       userAvatarBtn.style.display = 'flex';
       const initial = (currentProfile.name || currentProfile.email || 'U').trim().charAt(0).toUpperCase();
@@ -220,17 +218,20 @@ export function updateUserUI() {
     const profileName = document.getElementById('profileName');
     const profileEmail = document.getElementById('profileEmail');
     const profileRole = document.getElementById('profileRole');
+    const profileAvatarBig = document.getElementById('profileAvatarBig');
     if (profileName) profileName.textContent = currentProfile.name || 'Customer';
     if (profileEmail) profileEmail.textContent = currentProfile.email || currentUser.email || '';
     if (profileRole) profileRole.textContent = (currentProfile.role || 'customer').toUpperCase();
-    if (adminButton) {
-      adminButton.style.display = currentProfile.role === 'admin' ? 'inline-block' : 'none';
-    }
+    if (profileAvatarBig) profileAvatarBig.textContent = (currentProfile.name || currentProfile.email || 'U').trim().charAt(0).toUpperCase();
+
+    // Case-insensitive check on purpose — if the role was ever typed as "Admin"
+    // instead of "admin" directly in Supabase, this still recognizes it correctly.
+    const isAdmin = (currentProfile.role || '').trim().toLowerCase() === 'admin';
+    if (adminButton) adminButton.style.display = isAdmin ? 'block' : 'none';
   } else {
     // User is logged out
     if (btnAuth) btnAuth.style.display = 'inline-block';
     if (drawerBtnAuth) drawerBtnAuth.style.display = 'inline-block';
-    if (btnMyOrders) btnMyOrders.style.display = 'none';
     if (userAvatarBtn) userAvatarBtn.style.display = 'none';
     if (adminButton) adminButton.style.display = 'none';
   }
