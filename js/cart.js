@@ -13,6 +13,7 @@
  */
 
 import { formatUGX, showToast, openModal, closeModal, getFallbackImage, handleImgError } from './utils.js';
+import { currentUser } from './auth.js';
 
 // ── Cart State ────────────────────────────────────────────────────────────────────
 export let cart = [];
@@ -287,6 +288,7 @@ export async function finaliseOrder(paymentRef, txRef) {
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .insert({
+        user_id: currentUser ? currentUser.id : null,
         customer_name: name,
         customer_phone: phone,
         customer_address: address,
