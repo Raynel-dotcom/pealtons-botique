@@ -199,25 +199,32 @@ export async function handleResetPassword(event) {
 
 // ── UI Updates ───────────────────────────────────────────────────────────────────────
 export function updateUserUI() {
-  const authButton = document.getElementById('authButton');
-  const userMenu = document.getElementById('userMenu');
+  const btnAuth = document.getElementById('btnAuth');
+  const drawerBtnAuth = document.getElementById('drawerBtnAuth');
+  const userAvatarBtn = document.getElementById('userAvatarBtn');
+  const btnMyOrders = document.getElementById('btnMyOrders');
   const adminButton = document.getElementById('btnAdminDash');
 
   if (currentUser && currentProfile) {
     // User is logged in
-    if (authButton) authButton.style.display = 'none';
-    if (userMenu) {
-      userMenu.style.display = 'flex';
-      const userName = userMenu.querySelector('.user-name');
-      if (userName) userName.textContent = currentProfile.name || 'User';
+    if (btnAuth) btnAuth.style.display = 'none';
+    if (drawerBtnAuth) drawerBtnAuth.style.display = 'none';
+    if (btnMyOrders) btnMyOrders.style.display = 'inline-block';
+    if (userAvatarBtn) {
+      userAvatarBtn.style.display = 'flex';
+      const initial = (currentProfile.name || currentProfile.email || 'U').trim().charAt(0).toUpperCase();
+      userAvatarBtn.textContent = initial;
+      userAvatarBtn.title = `View My Account — ${currentProfile.name || currentProfile.email || ''}`;
     }
     if (adminButton) {
       adminButton.style.display = currentProfile.role === 'admin' ? 'inline-block' : 'none';
     }
   } else {
     // User is logged out
-    if (authButton) authButton.style.display = 'block';
-    if (userMenu) userMenu.style.display = 'none';
+    if (btnAuth) btnAuth.style.display = 'inline-block';
+    if (drawerBtnAuth) drawerBtnAuth.style.display = 'inline-block';
+    if (btnMyOrders) btnMyOrders.style.display = 'none';
+    if (userAvatarBtn) userAvatarBtn.style.display = 'none';
     if (adminButton) adminButton.style.display = 'none';
   }
 }
