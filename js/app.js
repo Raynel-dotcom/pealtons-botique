@@ -15,6 +15,21 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 if (supabase) window.supabase = supabase;
 
+// ── EmailJS Configuration (Contact Us form → admin email) ────────────────────────
+// Fill these in from your EmailJS account (emailjs.com):
+//   EMAILJS_PUBLIC_KEY  → Account → General → Public Key
+//   EMAILJS_SERVICE_ID  → Email Services → your connected service's ID
+//   EMAILJS_TEMPLATE_ID → Email Templates → your template's ID
+const EMAILJS_PUBLIC_KEY = 'STHp9Ah22TX7CTp3w';
+const EMAILJS_SERVICE_ID = 'service_2yc6l6k';
+const EMAILJS_TEMPLATE_ID = 'template_nenvgzc';
+// Note: the recipient address is hardcoded directly in the EmailJS template's
+// "To Email" field (natukundaraynel@gmail.com) — not sent from here.
+
+if (window.emailjs && EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+  window.emailjs.init(EMAILJS_PUBLIC_KEY);
+}
+
 // ── State ────────────────────────────────────────────────────────────────────────
 let allProducts = [];
 let activeCategory = 'all';
@@ -663,6 +678,54 @@ function handleDetailAddToCart(productId) {
   }
 }
 
+// ── Contact Us Form ──────────────────────────────────────────────────────────────
+export async function handleContactSubmit(event) {
+  event.preventDefault();
+
+  const name = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const subject = document.getElementById('contactSubject').value.trim();
+  const message = document.getElementById('contactMessage').value.trim();
+
+  const submitBtn = event.target.querySelector('button[type="submit"], .btn-primary');
+  if (submitBtn) submitBtn.disabled = true;
+
+  try {
+    // 1) Always store it in Supabase first — this is the permanent record,
+    //    and it succeeds even if email sending has a hiccup.
+    if (supabase) {
+      const { error } = await supabase.from('contact_messages').insert({
+        name, email, subject, message
+      });
+      if (error) throw error;
+    }
+
+    // 2) Try to email the admin — this is a "nice to have" notification on top
+    //    of the stored record, so a failure here shouldn't block the user
+    //    from knowing their message was received.
+    if (window.emailjs && EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+      try {
+        await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          name: name,
+          email: email,
+          title: subject,
+          message: message
+        });
+      } catch (emailError) {
+        console.error('Email notification failed (message was still saved):', emailError);
+      }
+    }
+
+    showToast('Message sent — we\'ll get back to you soon!');
+    event.target.reset();
+  } catch (error) {
+    console.error('Contact form submission failed:', error);
+    showToast('Could not send your message — please try again shortly.');
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
+  }
+}
+
 // ── Initialization ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   // Expose functions to window for inline HTML handlers
@@ -675,6 +738,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.closeDrawer = closeDrawer;
   window.setMainImage = setMainImage;
   window.selectSize = selectSize;
+  window.handleContactSubmit = handleContactSubmit;
   window.handleDetailAddToCart = handleDetailAddToCart;
   window.handleSearchInput = handleSearchInput;
   window.handleFilterChange = handleFilterChange;
