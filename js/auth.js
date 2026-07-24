@@ -15,7 +15,7 @@
  *   toggleWishlist(productId)
  */
 
-import { showToast, openModal, closeModal } from './utils.js';
+import { showToast, openModal, closeModal, formatUGX } from './utils.js';
 
 // ── Auth State ─────────────────────────────────────────────────────────────────────
 export let currentUser    = null;
@@ -216,6 +216,13 @@ export function updateUserUI() {
       userAvatarBtn.textContent = initial;
       userAvatarBtn.title = `View My Account — ${currentProfile.name || currentProfile.email || ''}`;
     }
+    // Fill in the "My Account" modal with the real logged-in user's info
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const profileRole = document.getElementById('profileRole');
+    if (profileName) profileName.textContent = currentProfile.name || 'Customer';
+    if (profileEmail) profileEmail.textContent = currentProfile.email || currentUser.email || '';
+    if (profileRole) profileRole.textContent = (currentProfile.role || 'customer').toUpperCase();
     if (adminButton) {
       adminButton.style.display = currentProfile.role === 'admin' ? 'inline-block' : 'none';
     }
@@ -231,6 +238,53 @@ export function updateUserUI() {
 
 export function openAuthModal() {
   openModal('authModal');
+}
+
+export async function openMyOrdersModal() {
+  openModal('myOrdersModal');
+  await loadMyOrders();
+}
+
+async function loadMyOrders() {
+  const listEl = document.getElementById('myOrdersList');
+  if (!listEl) return;
+  listEl.innerHTML = '<div class="loading-wrap"><div class="spinner"></div></div>';
+
+  const supabase = getSupabase();
+  if (!supabase || !currentUser) {
+    listEl.innerHTML = '<p style="text-align:center; color:var(--gray); padding:20px;">Please sign in to see your orders.</p>';
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      listEl.innerHTML = '<p style="text-align:center; color:var(--gray); padding:20px;">You haven\'t placed any orders yet.</p>';
+      return;
+    }
+
+    listEl.innerHTML = data.map(order => `
+      <div style="border:1px solid var(--border); border-radius:6px; padding:14px 16px; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-weight:600; font-size:13px;">Order #${String(order.id).slice(0, 8)}</span>
+          <span class="status-badge status-${order.status}">${order.status}</span>
+        </div>
+        <div style="font-size:13px; color:var(--gray); margin-top:6px;">
+          ${new Date(order.created_at).toLocaleDateString()} — ${formatUGX(order.total)}
+        </div>
+      </div>
+    `).join('');
+  } catch (error) {
+    console.error('Failed to load my orders:', error);
+    listEl.innerHTML = '<p style="text-align:center; color:var(--red); padding:20px;">Could not load your orders — please try again shortly.</p>';
+  }
 }
 
 // ── Form Handlers ───────────────────────────────────────────────────────────────────
@@ -359,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.handleAuthLogout = handleAuthLogout;
   window.handleResetPassword = handleResetPassword;
   window.openAuthModal = openAuthModal;
+  window.openMyOrdersModal = openMyOrdersModal;
   window.switchAuthTab = switchAuthTab;
   window.toggleWishlist = toggleWishlist;
   
